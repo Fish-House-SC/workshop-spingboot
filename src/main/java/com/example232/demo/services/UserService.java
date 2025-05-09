@@ -7,13 +7,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example232.demo.entities.User;
+import com.example232.demo.repositories.CategoryRepository;
 import com.example232.demo.repositories.UserRepository;
+import com.example232.demo.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class UserService {
+
+    private final CategoryRepository categoryRepository;
 	
 	@Autowired
 	private UserRepository repository;
+
+    UserService(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
 	
 	public List<User>FindAll(){
 		return repository.findAll();
@@ -21,7 +29,7 @@ public class UserService {
 
 	public User FindById(Long id) {
 	 	Optional<User> obj = repository.findById(id);
-	 	return obj.get();
+	 	return obj.orElseThrow(()-> new ResourceNotFoundException(id));
 	}
 	
 	public User insert(User obj) {
